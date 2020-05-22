@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Implementation-Title: springbootrestapi Maven Webapp
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: vivek
+Implementation-Vendor-Id: com.app
+Build-Jdk: 1.8.0_101
+Implementation-URL: http://www.example.com
+Created-By: Maven Integration for Eclipse
+
