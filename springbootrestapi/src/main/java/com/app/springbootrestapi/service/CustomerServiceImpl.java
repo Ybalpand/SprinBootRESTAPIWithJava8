@@ -54,7 +54,7 @@ public class CustomerServiceImpl implements CustomerService {
 			}
 			return cust;
 		} else
-			throw new CustomerNotFoundException("Invalid Value for Customer ID : " + cust.getCustomerId());
+			throw new CustomerNotFoundException("Invalid Value for Customer : " + cust.getCustomerId());
 	}
 
 	@Override
@@ -84,22 +84,20 @@ public class CustomerServiceImpl implements CustomerService {
 				return cust;
 			}
 		} else {
-			throw new CustomerNotFoundException("Customer Not Found : " + cust.getCustomerId());
+			throw new CustomerNotFoundException("Invalid Value for Customer : " + cust.getCustomerId());
 		}
 	}
 
 	public void deleteCustomer(int customerId) {
-		//Handle Bad Request for Customer id not found
-		System.out.println("customerId :: " + customerId);
+		 customerDAO.findById(customerId)
+		 .orElseThrow(()-> new CustomerNotFoundException("Can Not Delete the customer not present in Database :: "+ customerId));       //java 8 features
 		documentDAO.DeleteDocumentByCustomerID(customerId);
 		customerDAO.DeleteCustomerByCustomerID(customerId);
-		System.out.println("Deleted the customer ");
 
 	}
 
 	// getCustomerbyGender
 	public List<Customer> getCustomerByGender(String gender) {
-		System.out.println("get the customer list" + gender);
 		List<Customer> customerList = customerDAO.CustomerByGender(gender);
 		List<Customer> customerListWith = customerList.stream().distinct().collect(Collectors.toList()); // java 1.8
 																											// features
@@ -109,7 +107,6 @@ public class CustomerServiceImpl implements CustomerService {
 	// getCustomerbyDOB
 	@Override
 	public List<Customer> getCustomerByDob(Date dateOfBirth) {
-		System.out.println("get the customer list" + dateOfBirth);
 		List<Customer> customerList = customerDAO.CustomerByDOB(dateOfBirth);
 		List<Customer> customerListWith = customerList.stream().distinct().collect(Collectors.toList());
 		return customerListWith;
@@ -118,7 +115,6 @@ public class CustomerServiceImpl implements CustomerService {
 	// getCustomerByGenderWithDOB
 	@Override
 	public List<Customer> getCustomerByGenderWithDob(String gender, Date dob) {
-		System.out.println("get the customer list");
 		List<Customer> customerList = customerDAO.CustomerByGenderWithDob(gender, dob);
 		List<Customer> customerListWith = customerList.stream().distinct().collect(Collectors.toList());
 		return customerListWith;

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,9 +38,7 @@ public class CustomerController {
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
 	public List<Customer> getAllCustomer() {
-		System.out.println("Controller customer Layer ");
 		List<Customer> listcust = customerService.getAllCustomerList();
-		System.out.println("list of customer" + listcust);
 		for (Customer customer : listcust) {
 			System.out.println(customer);
 		}
@@ -52,14 +51,13 @@ public class CustomerController {
 			throws CustomerNotFoundException {
 		Customer customer = customerService.getCustomerById(customerId);
 		if (customerId <= 0) {
-			return new ResponseEntity<Customer>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<Customer>(customer, HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<Customer>(customer, HttpStatus.OK);
 	}
 
 	// 3 create customer
 	@PostMapping
-//	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Customer> createOrUpdateCustomer(@Valid @RequestBody Customer customer) {
 		Customer newCustomercreated = customerService.createCustomer(customer);
 		if (newCustomercreated == null)
@@ -70,9 +68,7 @@ public class CustomerController {
 
 	// 4 update customer
 	@PutMapping
-//	@ResponseStatus(HttpStatus.OK)
 	public Customer updateCustomer(@Valid @RequestBody Customer customer) {
-		System.out.println("update customer..");
 		Customer updated = customerService.updateCustomer(customer);
 		return updated;
 	}
@@ -81,7 +77,6 @@ public class CustomerController {
 	@DeleteMapping(value = "/{customerId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public @ResponseBody void deleteCustomer(@PathVariable("customerId") int customerId) {
-		System.out.println("Start deleteCustomer....");
 		customerService.deleteCustomer(customerId);
 	}
 
@@ -89,46 +84,46 @@ public class CustomerController {
 	@GetMapping(value = "/gender/{gender}")
 	@ResponseStatus(HttpStatus.OK)
 	public List<Customer> getCustomerByGender(@PathVariable("gender") String gender) {
-		System.out.println(" Get customerId with Gender...." + gender);
 		return customerService.getCustomerByGender(gender);
 	}
 
 	// 7 Get Customer By DOB
-
 	@GetMapping(value = "/dob/{dateOfBirth}")
 	@ResponseStatus(HttpStatus.OK)
 	public List<Customer> getCustomerByDOB(@PathVariable("dateOfBirth") String dateOfBirth) throws ParseException {
 		System.out.println(" Get customerId with dob...." + dateOfBirth.toString());
-		System.out.println(" Get DOB ....");
 		Date dob = ConstantsUtil.typecastToDate(dateOfBirth);
 		return customerService.getCustomerByDob(dob);
 	}
 
 	// 8 GenderWithDob
+	
+	@GetMapping(value = "/search")
+	@ResponseStatus(HttpStatus.OK)
+	public List<Customer> getCustomerByGenderWithDOB(@RequestParam(value = "gender", required = false) String gender,
+	@RequestParam(value="dateOfBirth", required = false) String dateOfBirth) throws ParseException {
+		Date dob = ConstantsUtil.typecastToDate(dateOfBirth);
+		return customerService.getCustomerByGenderWithDob(gender, dob);
+		
+	}
+	
+	/*  used path variable 
 	@GetMapping(value = "/{gender}/{dateOfBirth}")
 	@ResponseStatus(HttpStatus.OK)
 	public List<Customer> getCustomerByGenderWithDOB(@PathVariable("gender") String gender,
 			@PathVariable("dateOfBirth") String dateOfBirth) throws ParseException {
-		System.out.println("Enter in Get Customer by gender and date of birth" + gender + " - " + dateOfBirth);
 		Date dob = ConstantsUtil.typecastToDate(dateOfBirth);
 		return customerService.getCustomerByGenderWithDob(gender, dob);
 
-	}
+	}*/
+	
+
 
 	// 9 get customerList filter on customerName
 	@GetMapping(value = "/filterOnCustomerName/{customerName}")
 	@ResponseStatus(HttpStatus.OK)
 	public List<Customer> filterOnCustomerName(@PathVariable("customerName") String customerName) {
-		System.out.println("Controller customer filter " + customerName);
 		List<Customer> listOfcust = customerService.filterOnCustomerName(customerName);
-		System.out.println("list of customer" + listOfcust);
-
-		// java 1.8 features implement it
-		/*
-		 * listOfcust.forEach(customer ->{
-		 * System.out.println("Customer : "+customer.toString()); });
-		 */
-
 		return listOfcust;
 	}
 
